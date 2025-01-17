@@ -5,3 +5,4 @@ edition = "2024"
 
 [dependencies]
 bootloader = "0.11"
+micros-kernel = { path="../micros-kernel", artifact="bin", target = "x86_64-unknown-none" }

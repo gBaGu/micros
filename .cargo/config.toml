@@ -1,0 +1,3 @@
+[unstable]
+# required for image-builder to be able to build images from kernel binary
+bindeps = true
