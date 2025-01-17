@@ -1,0 +1,10 @@
+[package]
+name = "micros-kernel"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+bootloader_api = "0.11"
+x86_64 = "0.15"
+volatile = "0.4"
+panic-halt = "1.0"
