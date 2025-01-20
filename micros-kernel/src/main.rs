@@ -1,15 +1,16 @@
 #![no_std]
 #![no_main]
 
+mod framebuffer;
+
 use core::panic::PanicInfo;
 
 bootloader_api::entry_point!(main);
 
 fn main(bootinfo: &'static mut bootloader_api::BootInfo) -> ! {
     if let Some(framebuffer) = bootinfo.framebuffer.as_mut() {
-        for byte in framebuffer.buffer_mut() {
-            *byte = 0x90;
-        }
+        let mut display = framebuffer::Display::new(framebuffer);
+        display.clear();
     }
     loop {}
 }

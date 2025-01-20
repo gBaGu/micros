@@ -5,6 +5,7 @@ edition = "2021"
 
 [dependencies]
 bootloader_api = "0.11"
+embedded-graphics = "0.8"
 x86_64 = "0.15"
 volatile = "0.4"
 panic-halt = "1.0"
