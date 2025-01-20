@@ -1,8 +1,10 @@
 mod display;
+mod splash_screen;
 
 use bootloader_api::info::{FrameBuffer, PixelFormat};
 
 pub use display::Display;
+pub use splash_screen::SplashScreen;
 
 pub enum ColorEncodingFailed {
     UnsupportedFormat(PixelFormat),

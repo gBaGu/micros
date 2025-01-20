@@ -49,6 +49,10 @@ impl<'f> Display<'f> {
         Display { framebuffer }
     }
 
+    pub fn default_color() -> Rgb888 {
+        DEFAULT_DISPLAY_COLOR
+    }
+
     pub fn clear(&mut self) {
         // SAFETY: Self::Error is Infallible
         self.fill_solid(&self.bounding_box(), DEFAULT_DISPLAY_COLOR).unwrap();
