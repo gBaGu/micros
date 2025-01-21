@@ -1,4 +1,5 @@
-use embedded_graphics::geometry::{Dimensions, Point};
+use embedded_graphics::draw_target::DrawTarget;
+use embedded_graphics::geometry::Point;
 use embedded_graphics::pixelcolor::Rgb888;
 use embedded_graphics::primitives::{PointsIter, PrimitiveStyle, Rectangle, StyledDrawable};
 use embedded_graphics::transform::Transform;
@@ -39,35 +40,30 @@ impl Bouncer {
     }
 }
 
-pub struct SplashScreen<'f> {
-    display: Display<'f>,
-    bouncer: Bouncer,
+pub struct SplashScreen {
+    bouncer_ratio: u32,
 }
 
-impl<'f> SplashScreen<'f> {
-    pub fn new(display: Display<'f>) -> Self {
-        let bounding_box = display.bounding_box();
-        let bouncer_size = bounding_box.size / 10;
-        let bouncer_tl = bounding_box.top_left + (bounding_box.size - bouncer_size) / 2;
-        let bouncer_rect = Rectangle::new(bouncer_tl, bouncer_size);
-        Self {
-            display,
-            bouncer: Bouncer::new(bouncer_rect),
-        }
+impl SplashScreen {
+    pub fn new(bouncer_ratio: u32) -> Self {
+        Self { bouncer_ratio }
     }
 
-    pub fn run(&mut self) {
+    pub fn run<T: DrawTarget<Color = Rgb888>>(&mut self, target: &mut T) -> Result<(), T::Error> {
+        let bounding_box = target.bounding_box();
+        let bouncer_rect = Rectangle::with_center(
+            bounding_box.top_left + bounding_box.size / 2,
+            bounding_box.size / self.bouncer_ratio,
+        );
+        let mut bouncer = Bouncer::new(bouncer_rect);
         let background_color = Display::default_color();
         let bouncer_color = Rgb888::new(168, 87, 128);
         let bouncer_style = PrimitiveStyle::with_fill(bouncer_color);
-        self.bouncer
-            .object
-            .draw_styled(&bouncer_style, &mut self.display)
-            .unwrap();
+        bouncer.object.draw_styled(&bouncer_style, target)?;
         loop {
-            let old = self.bouncer.object;
-            self.bouncer.update();
-            let new = self.bouncer.object;
+            let old = bouncer.object;
+            bouncer.update();
+            let new = bouncer.object;
             let background_pixel_iter = old
                 .points()
                 .filter(|p| !new.contains(*p))
@@ -77,10 +73,10 @@ impl<'f> SplashScreen<'f> {
                 .filter(|p| !old.contains(*p))
                 .zip(core::iter::repeat(bouncer_color));
             for (point, color) in background_pixel_iter.chain(bouncer_new_pixel_iter) {
-                Pixel(point, color).draw(&mut self.display).unwrap()
+                Pixel(point, color).draw(target)?;
             }
 
-            self.bouncer.bounce(self.display.bounding_box());
+            bouncer.bounce(bounding_box);
         }
     }
 }
