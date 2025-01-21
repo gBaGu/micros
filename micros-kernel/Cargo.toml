@@ -5,6 +5,9 @@ edition = "2021"
 
 [dependencies]
 bootloader_api = "0.11"
+bootloader-x86_64-common = "0.11"
+conquer-once = { version = "0.4.0", default-features = false }
 embedded-graphics = "0.8"
+log = "0.4"
 x86_64 = "0.15"
 volatile = "0.4"

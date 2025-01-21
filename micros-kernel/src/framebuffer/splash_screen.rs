@@ -24,19 +24,23 @@ impl Bouncer {
         self.object.translate_mut(self.vector);
     }
 
-    pub fn bounce(&mut self, bounding_box: Rectangle) {
+    pub fn bounce(&mut self, bounding_box: Rectangle) -> u8 {
+        let mut bounces = 0;
         if self.object.top_left.x < bounding_box.top_left.x
             || (self.object.top_left + self.object.size).x
                 > (bounding_box.top_left + bounding_box.size).x
         {
             self.vector.x = -self.vector.x;
+            bounces += 1;
         }
         if self.object.top_left.y < bounding_box.top_left.y
             || (self.object.top_left + self.object.size).y
                 > (bounding_box.top_left + bounding_box.size).y
         {
             self.vector.y = -self.vector.y;
+            bounces += 1;
         }
+        bounces
     }
 }
 
@@ -60,7 +64,8 @@ impl SplashScreen {
         let bouncer_color = Rgb888::new(168, 87, 128);
         let bouncer_style = PrimitiveStyle::with_fill(bouncer_color);
         bouncer.object.draw_styled(&bouncer_style, target)?;
-        loop {
+        let mut bounces: u8 = 0;
+        while bounces < 10 {
             let old = bouncer.object;
             bouncer.update();
             let new = bouncer.object;
@@ -76,7 +81,8 @@ impl SplashScreen {
                 Pixel(point, color).draw(target)?;
             }
 
-            bouncer.bounce(bounding_box);
+            bounces += bouncer.bounce(bounding_box);
         }
+        Ok(())
     }
 }
